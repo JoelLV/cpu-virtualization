@@ -1,4 +1,4 @@
-import Snapshot from "./Snapshot.interface";
+import Snapshot from './Snapshot.interface'
 
 /**
  * Interface that must be

@@ -11,8 +11,8 @@
  * for each IO instruction to complete.
  */
 interface ProcessForm {
-    length: number,
-    ioInterval: number,
+    length: number
+    ioInterval: number
     ioLength: number
 }
 

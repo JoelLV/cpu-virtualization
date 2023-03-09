@@ -1,4 +1,4 @@
-import ProcessSnapshot from "./Process.interface"
+import ProcessSnapshot from './ProcessSnapshot.interface'
 
 /**
  * Stores the state of each

@@ -1,9 +1,9 @@
-import ProcessState from "./ProcessState.enum"
+import ProcessState from './ProcessState.enum'
 
 /**
  * Stores useful information regarding
- * the process at a specific snapshot. 
- * Mainly used by the graph to display 
+ * the process at a specific snapshot.
+ * Mainly used by the graph to display
  * information accurately. The startTime
  * property correlates to the timeslot
  * the graph will start displaying
@@ -17,8 +17,8 @@ import ProcessState from "./ProcessState.enum"
  * to the status specified.
  */
 interface ProcessSnapshot {
-    status: ProcessState,
-    startTime: number,
+    status: ProcessState
+    startTime: number
     currentTime: number
 }
 
