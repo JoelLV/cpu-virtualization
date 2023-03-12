@@ -1,6 +1,6 @@
-import { FormControl, Button } from '@mui/material'
-import FormHelperText from '@mui/material/FormHelperText'
+import { Box, FormControl, IconButton, TextField } from '@mui/material'
 import InputLabel from '@mui/material/InputLabel'
+import AddCircleIcon from '@mui/icons-material/AddCircle'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import PolicyType from '../types/PolicyTypes.enum'
@@ -26,9 +26,24 @@ const PolicyForm = (props: Props) => {
         policyTypeSetter(e.target.value)
     }
 
+    /**
+     * Adds a new ProcessInfo object to
+     * the processes array with default
+     * values. Updates the state.
+     */
+    const newProcessButtonClicked = () => {
+        const newProcess: ProcessInfo = {
+            length: 1,
+            ioLength: 0,
+            ioInterval: 0,
+        }
+        processes.push(newProcess)
+        processesSetter(structuredClone(processes))
+    }
+
     return (
-        <>
-            <FormControl sx={{ m: 1, minWidth: 120 }}>
+        <div>
+            <FormControl sx={{ minWidth: 100 }}>
                 <InputLabel id="policy-type-label">Policy</InputLabel>
                 <Select
                     labelId="policy-type-label"
@@ -38,22 +53,59 @@ const PolicyForm = (props: Props) => {
                     onChange={policyTypeChanged}
                     autoWidth
                 >
-                    <MenuItem value={PolicyType.FIFO}>FIFO</MenuItem>
-                    <MenuItem value={PolicyType.ROUND_ROBIN}>Round Robin</MenuItem>
+                    <MenuItem value={PolicyType.FIFO}>{PolicyType.FIFO}</MenuItem>
+                    <MenuItem value={PolicyType.ROUND_ROBIN}>
+                        {PolicyType.ROUND_ROBIN}
+                    </MenuItem>
                 </Select>
-                <FormHelperText>Select Scheduling Policy</FormHelperText>
+            </FormControl>
+            {
+                policyType === PolicyType.ROUND_ROBIN && (
+                    <TextField
+                        required
+                        label="CS Interval"
+                        type="number"
+                        sx={{
+                            maxWidth: '9.5em',
+                            minWidth: '9.5em',
+                        }}
+                    />
+                )
+            }
+            <div className="process-form-container">
                 <div className="flex">
-                    <Button variant="contained" color="success">Add a New Process</Button>
+                    <p>Add a new Process</p>
+                    <IconButton
+                        size="large"
+                        color="success"
+                        onClick={newProcessButtonClicked}
+                    >
+                        <AddCircleIcon fontSize="inherit" />
+                    </IconButton>
                 </div>
                 {
-                    processes.map((_, index) => {
-                        return (
-                            <ProcessForm key={index} />
-                        )
-                    })
+                    processes.length > 0 && (
+                        <Box
+                            sx={{
+                                border: '1px solid grey',
+                                padding: '0.5em',
+                            }}
+                        >
+                            {processes.map((_, index) => {
+                                return (
+                                    <ProcessForm
+                                        key={index}
+                                        index={index}
+                                        processes={processes}
+                                        processesSetter={processesSetter}
+                                    />
+                                )
+                            })}
+                        </Box>
+                    )
                 }
-            </FormControl>
-        </>
+            </div>
+        </div>
     )
 }
 

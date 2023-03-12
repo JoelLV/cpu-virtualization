@@ -1,6 +1,6 @@
 enum PolicyType {
-    FIFO = 'fifo',
-    ROUND_ROBIN = 'roundRobin'
+    FIFO = 'FIFO',
+    ROUND_ROBIN = 'Round Robin',
 }
 
 export default PolicyType
