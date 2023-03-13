@@ -33,3 +33,10 @@
     align-items: end;
     gap: 1.5em;
 }
+
+.legend {
+    display: flex;
+    gap: 1.5em;
+    justify-content: center;
+    align-items: center;
+}

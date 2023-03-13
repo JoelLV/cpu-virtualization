@@ -7,11 +7,11 @@
  * process.
  */
 enum ProcessState {
-    BLOCKED,
-    RUNNING,
-    READY,
-    NOT_ARRIVED,
-    COMPLETE,
+    BLOCKED = 'Blocked',
+    RUNNING = 'Running',
+    READY = 'Ready',
+    NOT_ARRIVED = 'Not Arrived',
+    COMPLETE = 'Complete',
 }
 
 export default ProcessState

@@ -4,18 +4,24 @@ import AddCircleIcon from '@mui/icons-material/AddCircle'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import PolicyType from '../types/PolicyTypes.enum'
-import ProcessInfo from '../types/ProcessInfo'
+import Process from '../types/Process'
 import ProcessForm from './ProcessForm'
 
 interface Props {
     policyTypeSetter: Function
     policyType: PolicyType
-    processes: ProcessInfo[]
+    processes: Process[]
     processesSetter: Function
+    showingSnapshots: boolean
 }
-
 const PolicyForm = (props: Props) => {
-    const { policyType, policyTypeSetter, processes, processesSetter } = props
+    const {
+        policyType,
+        policyTypeSetter,
+        processes,
+        processesSetter,
+        showingSnapshots,
+    } = props
 
     /**
      * Modifies policyType state
@@ -27,12 +33,12 @@ const PolicyForm = (props: Props) => {
     }
 
     /**
-     * Adds a new ProcessInfo object to
+     * Adds a new Process object to
      * the processes array with default
      * values. Updates the state.
      */
     const newProcessButtonClicked = () => {
-        const newProcess: ProcessInfo = {
+        const newProcess: Process = {
             length: 1,
             ioLength: 0,
             ioInterval: 0,
@@ -48,30 +54,31 @@ const PolicyForm = (props: Props) => {
                 <Select
                     labelId="policy-type-label"
                     value={policyType}
-                    defaultValue={PolicyType.FIFO}
                     label="Policy"
                     onChange={policyTypeChanged}
                     autoWidth
+                    disabled={showingSnapshots}
                 >
-                    <MenuItem value={PolicyType.FIFO}>{PolicyType.FIFO}</MenuItem>
+                    <MenuItem value={PolicyType.FIFO}>
+                        {PolicyType.FIFO}
+                    </MenuItem>
                     <MenuItem value={PolicyType.ROUND_ROBIN}>
                         {PolicyType.ROUND_ROBIN}
                     </MenuItem>
                 </Select>
             </FormControl>
-            {
-                policyType === PolicyType.ROUND_ROBIN && (
-                    <TextField
-                        required
-                        label="CS Interval"
-                        type="number"
-                        sx={{
-                            maxWidth: '9.5em',
-                            minWidth: '9.5em',
-                        }}
-                    />
-                )
-            }
+            {policyType === PolicyType.ROUND_ROBIN && (
+                <TextField
+                    required
+                    label="CS Interval"
+                    type="number"
+                    sx={{
+                        maxWidth: '9.5em',
+                        minWidth: '9.5em',
+                    }}
+                    disabled={showingSnapshots}
+                />
+            )}
             <div className="process-form-container">
                 <div className="flex">
                     <p>Add a new Process</p>
@@ -79,31 +86,31 @@ const PolicyForm = (props: Props) => {
                         size="large"
                         color="success"
                         onClick={newProcessButtonClicked}
+                        disabled={showingSnapshots}
                     >
                         <AddCircleIcon fontSize="inherit" />
                     </IconButton>
                 </div>
-                {
-                    processes.length > 0 && (
-                        <Box
-                            sx={{
-                                border: '1px solid grey',
-                                padding: '0.5em',
-                            }}
-                        >
-                            {processes.map((_, index) => {
-                                return (
-                                    <ProcessForm
-                                        key={index}
-                                        index={index}
-                                        processes={processes}
-                                        processesSetter={processesSetter}
-                                    />
-                                )
-                            })}
-                        </Box>
-                    )
-                }
+                {processes.length > 0 && (
+                    <Box
+                        sx={{
+                            border: '1px solid grey',
+                            padding: '0.5em',
+                        }}
+                    >
+                        {processes.map((_, index) => {
+                            return (
+                                <ProcessForm
+                                    key={index}
+                                    index={index}
+                                    processes={processes}
+                                    processesSetter={processesSetter}
+                                    showingSnapshots={showingSnapshots}
+                                />
+                            )
+                        })}
+                    </Box>
+                )}
             </div>
         </div>
     )

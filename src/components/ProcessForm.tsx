@@ -1,14 +1,15 @@
 import { IconButton, TextField } from '@mui/material'
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle'
-import ProcessInfo from '../types/ProcessInfo'
+import Process from '../types/Process'
 
 interface Props {
     index: number
-    processes: ProcessInfo[]
+    processes: Process[]
     processesSetter: Function
+    showingSnapshots: boolean
 }
 const ProcessForm = (props: Props) => {
-    const { index, processes, processesSetter } = props
+    const { index, processes, processesSetter, showingSnapshots } = props
 
     /**
      * Removes a process from the 'processes'
@@ -21,12 +22,12 @@ const ProcessForm = (props: Props) => {
     }
 
     /**
-     * Modifies a specific attribute of a ProcessInfo object
+     * Modifies a specific attribute of a Process object
      * stored in the processes array depending on the
      * index given and the attribute specified.
      *
      * @param newValue the new value that will be used to modify the process.
-     * @param attribute the attribute that will be modified for the ProcessInfo object.
+     * @param attribute the attribute that will be modified for the Process object.
      */
     const processInfoChanged = (
         newValue: number,
@@ -52,6 +53,7 @@ const ProcessForm = (props: Props) => {
                     maxWidth: '6.5em',
                     minWidth: '6.5em',
                 }}
+                disabled={showingSnapshots}
             />
             <TextField
                 required
@@ -66,6 +68,7 @@ const ProcessForm = (props: Props) => {
                     maxWidth: '7.5em',
                     minWidth: '7.5em',
                 }}
+                disabled={showingSnapshots}
             />
             <TextField
                 required
@@ -80,11 +83,13 @@ const ProcessForm = (props: Props) => {
                     maxWidth: '7.5em',
                     minWidth: '7.5em',
                 }}
+                disabled={showingSnapshots}
             />
             <IconButton
                 color="error"
                 size="small"
                 onClick={removeProcessClicked}
+                disabled={showingSnapshots}
             >
                 <RemoveCircleIcon />
             </IconButton>
