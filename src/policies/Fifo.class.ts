@@ -5,7 +5,7 @@ import Scheduler from '../types/Scheduler.interface'
 import Snapshot from '../types/Snapshot.interface'
 
 class Fifo implements Scheduler {
-    constructor(private processes: Process[]) {}
+    constructor(private processes: Process[]) { }
 
     /**
      * Calculates the number of timeslots needed
@@ -29,41 +29,41 @@ class Fifo implements Scheduler {
     }
 
     /**
-     * Calculates the number of timeslots needed
-     * for a specific process to complete. Takes
-     * into consideration the overlaps between
-     * other processes and the arrival time
-     * of the target process.
-     *
-     * @param targetProcessIndex index of the process that will be calculated in the processes array
-     * @returns the number of timeslots needed for a process to complete.
+     * Determines which process to run by determining
+     * which process has not been completed yet and
+     * arrived the earliest.
+     * @param timeslotOfCompletion array of numbers that tell at which timeslot the process finished. -1 if the process has not finished yet.
+     * @returns the index of the earliest possible process to run
      */
-    getTotalTimeslotsNeededForProcess(targetProcessIndex: number): number {
-        const targetProcess: Process = this.processes[targetProcessIndex]
-        if (targetProcessIndex === 0) {
-            return this.getTimeslotsNeededForProcess(targetProcess) + targetProcess.arrivalTime
-        } else {
-            const overlap: number =
-                this.getTotalTimeslotsNeededForProcess(targetProcessIndex - 1) -
-                targetProcess.arrivalTime
-            return (
-                this.getTimeslotsNeededForProcess(targetProcess) +
-                targetProcess.arrivalTime +
-                (overlap >= 0 ? overlap : 0)
-            ) // Do not add overlap if there is no overlap at all. (overlap is negative)
-        }
+    getNextProcessIndexToRun(timeslotOfCompletion: number[]): number {
+        let earliestProcessIndexArrival = 0
+        this.processes.forEach((process: Process, index: number) => {
+            if (
+                process.arrivalTime <= this.processes[earliestProcessIndexArrival].arrivalTime &&
+                timeslotOfCompletion[index] === -1
+            ) {
+                earliestProcessIndexArrival = index
+            }
+        })
+        return earliestProcessIndexArrival
     }
 
     /**
-     * Returns the number of timeslots needed
-     * for the processor to complete its
-     * workload.
+     * Determines whether the workload has
+     * been completed according to the
+     * process snapshots given.
      *
-     * @returns the sum of timeslots needed for each process to be completed
-     * using FIFO as the scheduling policy.
+     * @param processSnapshots process snapshots used to determine whether the workload has been completed.
+     * @returns whether the workload has already been completed or not.
      */
-    getTotalTimeslots(): number {
-        return this.getTotalTimeslotsNeededForProcess(this.processes.length - 1)
+    workloadIsCompleted(processSnapshots: ProcessSnapshot[]): boolean {
+        let completed: boolean = true
+        processSnapshots.forEach((process: ProcessSnapshot) => {
+            if (process.status !== ProcessState.COMPLETE) {
+                completed = false
+            }
+        })
+        return completed
     }
 
     /**
@@ -78,12 +78,21 @@ class Fifo implements Scheduler {
      * @param processIndex the index of the process relative to the array this.processes
      * @returns a process snapshot which represents the process state at a particular timeslot.
      */
-    getProcessSnapshot(timeslot: number, process: Process, processIndex: number): ProcessSnapshot {
+    getProcessSnapshot(
+        timeslot: number,
+        process: Process,
+        processIndex: number,
+        activeProcessIndex: number,
+        timeslotsBeforeCompletion: number[],
+        timeslotOfCompletion: number[],
+        timeslotsBeforeIoCall: number[],
+        blockedProcessCounter: number[]
+    ): ProcessSnapshot {
         let status: ProcessState = ProcessState.NOT_ARRIVED
         let startTime: number = 0
         let currentTime: number = 0
 
-        if (timeslot < process.arrivalTime) {
+        if (timeslot <= process.arrivalTime) {
             // Process has not arrived yet.
             return {
                 status,
@@ -91,20 +100,34 @@ class Fifo implements Scheduler {
                 currentTime,
             }
         } else {
-            const completionTimeslot: number = this.getTotalTimeslotsNeededForProcess(processIndex)
             startTime = process.arrivalTime
             currentTime = timeslot
 
-            if (timeslot >= completionTimeslot) {
-                status = ProcessState.COMPLETE
-                currentTime = completionTimeslot
-            } else if (
-                processIndex === 0 ||
-                timeslot > this.getTotalTimeslotsNeededForProcess(processIndex - 1)
-            ) {
+            if (processIndex === activeProcessIndex) {
                 status = ProcessState.RUNNING
+                if (process.ioInterval > 0) {
+                    if (timeslotsBeforeIoCall[processIndex] <= 0) {
+                        if (blockedProcessCounter[processIndex] >= process.ioLength) {
+                            timeslotsBeforeIoCall[processIndex] = process.ioInterval
+                            blockedProcessCounter[processIndex] = 0
+                        } else {
+                            status = ProcessState.BLOCKED
+                            ++blockedProcessCounter[processIndex]
+                        }
+                    } else {
+                        --timeslotsBeforeIoCall[processIndex]
+                    }
+                }
+                --timeslotsBeforeCompletion[processIndex]
             } else {
                 status = ProcessState.READY
+            }
+            if (timeslotsBeforeCompletion[processIndex] <= 0) {
+                status = ProcessState.COMPLETE
+                if (timeslotOfCompletion[processIndex] === -1) {
+                    timeslotOfCompletion[processIndex] = timeslot
+                }
+                currentTime = timeslotOfCompletion[processIndex]
             }
         }
 
@@ -128,38 +151,44 @@ class Fifo implements Scheduler {
         const timeslotsBeforeIoCall: number[] = this.processes.map((prosess: Process): number => {
             return prosess.ioInterval
         })
-        let timeslotsSpentInIoCall: number = 0
+        const timeslotsBeforeCompletion: number[] = this.processes.map(
+            (process: Process): number => {
+                return this.getTimeslotsNeededForProcess(process)
+            }
+        )
+        const timeslotOfCompletion: number[] = this.processes.map(_ => {
+            return -1
+        })
+        const blockedTimeslots: number[] = this.processes.map(_ => {
+            return 0
+        })
 
-        for (let timeslot = 1; timeslot <= this.getTotalTimeslots(); timeslot++) {
-            const snapshot: Snapshot = {
+        let runningProcessIndex: number = this.getNextProcessIndexToRun(timeslotOfCompletion)
+        let timeslot = 1
+        let snapshot: Snapshot
+        do {
+            snapshot = {
                 processes: [],
             }
             this.processes.forEach((process: Process, index: number) => {
                 const processSnapshot: ProcessSnapshot = this.getProcessSnapshot(
                     timeslot,
                     process,
-                    index
+                    index,
+                    runningProcessIndex,
+                    timeslotsBeforeCompletion,
+                    timeslotOfCompletion,
+                    timeslotsBeforeIoCall,
+                    blockedTimeslots
                 )
-                if (processSnapshot.status === ProcessState.RUNNING && process.ioInterval > 0) {
-                    if (timeslotsBeforeIoCall[index] > 0) {
-                        // Not in I/O call yet.
-                        --timeslotsBeforeIoCall[index]
-                    } else if (timeslotsSpentInIoCall >= process.ioLength) {
-                        // Spent enough timeslots in I/O call. Reset I/O counter and
-                        // timeslots spent in I/O call.
-                        timeslotsBeforeIoCall[index] = process.ioInterval
-                        timeslotsSpentInIoCall = 0
-                    } else {
-                        // Still in I/O call. Increment timeslots spent
-                        // in I/O call and modify state to BLOCKED.
-                        processSnapshot.status = ProcessState.BLOCKED
-                        ++timeslotsSpentInIoCall
-                    }
+                if (processSnapshot.status === ProcessState.COMPLETE) {
+                    runningProcessIndex = this.getNextProcessIndexToRun(timeslotOfCompletion)
                 }
                 snapshot.processes.push(processSnapshot)
             })
             snapshots.push(snapshot)
-        }
+            ++timeslot
+        } while (!this.workloadIsCompleted(snapshot.processes))
 
         return snapshots
     }

@@ -65,7 +65,7 @@ class RoundRobin implements Scheduler {
      * @returns whether the process has arrived or not.
      */
     processHasArrived(timeslot: number, processIndex: number): boolean {
-        return timeslot >= this.processes[processIndex].arrivalTime
+        return timeslot > this.processes[processIndex].arrivalTime
     }
 
     /**
@@ -188,9 +188,13 @@ class RoundRobin implements Scheduler {
         const snapshots: Snapshot[] = []
 
         let contextSwitchCounter: number = this.contextSwitchInterval - 1
-        let currRunningProcessIndex: number = 0
         let currTimeslot: number = 1
         let currSnapshot: Snapshot
+        let currRunningProcessIndex: number = this.getNewActiveIndexAfterContextSwitch(
+            0,
+            0,
+            timeslotOfCompletion
+        )
         do {
             currSnapshot = {
                 processes: [],
