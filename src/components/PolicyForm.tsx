@@ -64,12 +64,8 @@ const PolicyForm = (props: Props) => {
                     autoWidth
                     disabled={showingSnapshots}
                 >
-                    <MenuItem value={PolicyType.FIFO}>
-                        {PolicyType.FIFO}
-                    </MenuItem>
-                    <MenuItem value={PolicyType.ROUND_ROBIN}>
-                        {PolicyType.ROUND_ROBIN}
-                    </MenuItem>
+                    <MenuItem value={PolicyType.FIFO}>{PolicyType.FIFO}</MenuItem>
+                    <MenuItem value={PolicyType.ROUND_ROBIN}>{PolicyType.ROUND_ROBIN}</MenuItem>
                 </Select>
             </FormControl>
             {policyType === PolicyType.ROUND_ROBIN && (

@@ -22,9 +22,7 @@ class Fifo implements Scheduler {
         sum += process.length
         // Obtains the number of extra timeslots needed to perform the I/O calls.
         if (process.ioInterval > 0) {
-            sum +=
-                Math.floor((process.length - 1) / process.ioInterval) *
-                process.ioLength
+            sum += Math.floor((process.length - 1) / process.ioInterval) * process.ioLength
         }
 
         return sum
@@ -43,10 +41,7 @@ class Fifo implements Scheduler {
     getTotalTimeslotsNeededForProcess(targetProcessIndex: number): number {
         const targetProcess: Process = this.processes[targetProcessIndex]
         if (targetProcessIndex === 0) {
-            return (
-                this.getTimeslotsNeededForProcess(targetProcess) +
-                targetProcess.arrivalTime
-            )
+            return this.getTimeslotsNeededForProcess(targetProcess) + targetProcess.arrivalTime
         } else {
             const overlap: number =
                 this.getTotalTimeslotsNeededForProcess(targetProcessIndex - 1) -
@@ -83,11 +78,7 @@ class Fifo implements Scheduler {
      * @param processIndex the index of the process relative to the array this.processes
      * @returns a process snapshot which represents the process state at a particular timeslot.
      */
-    getProcessSnapshot(
-        timeslot: number,
-        process: Process,
-        processIndex: number
-    ): ProcessSnapshot {
+    getProcessSnapshot(timeslot: number, process: Process, processIndex: number): ProcessSnapshot {
         let status: ProcessState = ProcessState.NOT_ARRIVED
         let startTime: number = 0
         let currentTime: number = 0
@@ -100,8 +91,7 @@ class Fifo implements Scheduler {
                 currentTime,
             }
         } else {
-            const completionTimeslot: number =
-                this.getTotalTimeslotsNeededForProcess(processIndex)
+            const completionTimeslot: number = this.getTotalTimeslotsNeededForProcess(processIndex)
             startTime = process.arrivalTime
             currentTime = timeslot
 
@@ -110,8 +100,7 @@ class Fifo implements Scheduler {
                 currentTime = completionTimeslot
             } else if (
                 processIndex === 0 ||
-                timeslot >
-                    this.getTotalTimeslotsNeededForProcess(processIndex - 1)
+                timeslot > this.getTotalTimeslotsNeededForProcess(processIndex - 1)
             ) {
                 status = ProcessState.RUNNING
             } else {
@@ -136,28 +125,22 @@ class Fifo implements Scheduler {
      */
     getSnapshots(): Snapshot[] {
         const snapshots: Snapshot[] = []
-        const timeslotsBeforeIoCall: number[] = this.processes.map(
-            (prosess: Process): number => {
-                return prosess.ioInterval
-            }
-        )
+        const timeslotsBeforeIoCall: number[] = this.processes.map((prosess: Process): number => {
+            return prosess.ioInterval
+        })
         let timeslotsSpentInIoCall: number = 0
 
-        for (
-            let timeslot = 1;
-            timeslot <= this.getTotalTimeslots();
-            timeslot++
-        ) {
+        for (let timeslot = 1; timeslot <= this.getTotalTimeslots(); timeslot++) {
             const snapshot: Snapshot = {
                 processes: [],
             }
             this.processes.forEach((process: Process, index: number) => {
-                const processSnapshot: ProcessSnapshot =
-                    this.getProcessSnapshot(timeslot, process, index)
-                if (
-                    processSnapshot.status === ProcessState.RUNNING &&
-                    process.ioInterval > 0
-                ) {
+                const processSnapshot: ProcessSnapshot = this.getProcessSnapshot(
+                    timeslot,
+                    process,
+                    index
+                )
+                if (processSnapshot.status === ProcessState.RUNNING && process.ioInterval > 0) {
                     if (timeslotsBeforeIoCall[index] > 0) {
                         // Not in I/O call yet.
                         --timeslotsBeforeIoCall[index]

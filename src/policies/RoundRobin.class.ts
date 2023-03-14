@@ -5,10 +5,7 @@ import Scheduler from '../types/Scheduler.interface'
 import Snapshot from '../types/Snapshot.interface'
 
 class RoundRobin implements Scheduler {
-    constructor(
-        private processes: Process[],
-        private contextSwitchInterval: number
-    ) {}
+    constructor(private processes: Process[], private contextSwitchInterval: number) {}
 
     /**
      * Calculates the number of timeslots needed
@@ -22,9 +19,7 @@ class RoundRobin implements Scheduler {
         sum += process.length
         // Obtains the number of extra timeslots needed to perform the I/O calls.
         if (process.ioInterval > 0) {
-            sum +=
-                Math.floor((process.length - 1) / process.ioInterval) *
-                process.ioLength
+            sum += Math.floor((process.length - 1) / process.ioInterval) * process.ioLength
         }
 
         return sum
@@ -48,8 +43,7 @@ class RoundRobin implements Scheduler {
     ): number {
         let processIndex: number = currActiveIndex
         do {
-            processIndex =
-                processIndex + 1 >= this.processes.length ? 0 : processIndex + 1
+            processIndex = processIndex + 1 >= this.processes.length ? 0 : processIndex + 1
             if (
                 timeslotOfCompletion[processIndex] === -1 &&
                 this.processHasArrived(timeslot, processIndex)
@@ -132,13 +126,9 @@ class RoundRobin implements Scheduler {
                 this.processes[processIndex].ioInterval > 0
             ) {
                 status = ProcessState.BLOCKED
-                if (
-                    blockedTimeslots[processIndex] >=
-                    this.processes[processIndex].ioLength
-                ) {
-                    // Process completed I/O call. Reset all counters and set the status to ready again.
-                    blockedProcessesCounter[processIndex] =
-                        this.processes[processIndex].ioInterval
+                if (blockedTimeslots[processIndex] >= this.processes[processIndex].ioLength) {
+                    // Process completed I/O call. Reset all counters.
+                    blockedProcessesCounter[processIndex] = this.processes[processIndex].ioInterval
                     blockedTimeslots[processIndex] = 0
                     if (processIndex === activeProcessIndex) {
                         status = ProcessState.RUNNING
@@ -186,16 +176,12 @@ class RoundRobin implements Scheduler {
                 return this.getTimeslotsNeededForProcess(process)
             }
         )
-        const timeslotOfCompletion: number[] = this.processes.map(
-            (_): number => {
-                return -1
-            }
-        )
-        const blockedProcessesCounter: number[] = this.processes.map(
-            (process: Process): number => {
-                return process.ioInterval
-            }
-        )
+        const timeslotOfCompletion: number[] = this.processes.map((_): number => {
+            return -1
+        })
+        const blockedProcessesCounter: number[] = this.processes.map((process: Process): number => {
+            return process.ioInterval
+        })
         const blockedTimeslots: number[] = this.processes.map((_): number => {
             return 0
         })
@@ -210,28 +196,23 @@ class RoundRobin implements Scheduler {
                 processes: [],
             }
             this.processes.forEach((_, index: number) => {
-                const processSnapshot: ProcessSnapshot =
-                    this.getProcessSnapshot(
-                        currTimeslot,
-                        index,
-                        currRunningProcessIndex,
-                        timeslotOfCompletion,
-                        timeslotsBeforeCompletion,
-                        blockedProcessesCounter,
-                        blockedTimeslots
-                    )
+                const processSnapshot: ProcessSnapshot = this.getProcessSnapshot(
+                    currTimeslot,
+                    index,
+                    currRunningProcessIndex,
+                    timeslotOfCompletion,
+                    timeslotsBeforeCompletion,
+                    blockedProcessesCounter,
+                    blockedTimeslots
+                )
                 currSnapshot.processes.push(processSnapshot)
             })
-            if (
-                contextSwitchCounter <= 0 ||
-                timeslotOfCompletion[currRunningProcessIndex] !== -1
-            ) {
-                currRunningProcessIndex =
-                    this.getNewActiveIndexAfterContextSwitch(
-                        currTimeslot,
-                        currRunningProcessIndex,
-                        timeslotOfCompletion
-                    )
+            if (contextSwitchCounter <= 0 || timeslotOfCompletion[currRunningProcessIndex] !== -1) {
+                currRunningProcessIndex = this.getNewActiveIndexAfterContextSwitch(
+                    currTimeslot,
+                    currRunningProcessIndex,
+                    timeslotOfCompletion
+                )
                 contextSwitchCounter = this.contextSwitchInterval
             }
             --contextSwitchCounter

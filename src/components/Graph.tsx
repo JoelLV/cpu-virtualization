@@ -57,10 +57,7 @@ const Graph = (props: Props) => {
         for (let key in processStateColors) {
             if (key !== 'Not Arrived') {
                 components.push(
-                    <div
-                        className="center-container"
-                        style={{ fontSize: '0.7em' }}
-                    >
+                    <div className="center-container" style={{ fontSize: '0.7em' }}>
                         {`${key}: `}
                         <SquareIcon
                             key={index}
@@ -120,11 +117,9 @@ const Graph = (props: Props) => {
                 data={{
                     labels:
                         snapshot !== undefined
-                            ? snapshot.processes.map(
-                                  (_, index: number): string => {
-                                      return `Process ${index + 1}`
-                                  }
-                              )
+                            ? snapshot.processes.map((_, index: number): string => {
+                                  return `Process ${index + 1}`
+                              })
                             : [],
                     datasets: [
                         {
@@ -134,9 +129,7 @@ const Graph = (props: Props) => {
                     ],
                 }}
             />
-            {snapshot !== undefined && (
-                <div className="legend">{getLegendComponents()}</div>
-            )}
+            {snapshot !== undefined && <div className="legend">{getLegendComponents()}</div>}
         </>
     )
 }

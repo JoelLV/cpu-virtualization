@@ -1,12 +1,4 @@
-import {
-    BarElement,
-    CategoryScale,
-    Chart,
-    Legend,
-    LinearScale,
-    Title,
-    Tooltip,
-} from 'chart.js'
+import { BarElement, CategoryScale, Chart, Legend, LinearScale, Title, Tooltip } from 'chart.js'
 import { useState } from 'react'
 import PlayCircleIcon from '@mui/icons-material/PlayCircle'
 import CancelIcon from '@mui/icons-material/Cancel'
@@ -31,8 +23,7 @@ const App = () => {
     const [processes, setProcesses] = useState<Process[]>([])
     const [currSnapshotIndex, setCurrSnapshotIndex] = useState<number>(0)
     const [snapshots, setSnapshots] = useState<Snapshot[]>([])
-    const [contextSwitchInterval, setContextSwitchInterval] =
-        useState<number>(1)
+    const [contextSwitchInterval, setContextSwitchInterval] = useState<number>(1)
 
     /**
      * Returns an array of snapshot
@@ -80,7 +71,7 @@ const App = () => {
             setCurrSnapshotIndex(0)
         }
 
-        setShowingSnapshots((prevValue) => !prevValue)
+        setShowingSnapshots(prevValue => !prevValue)
     }
 
     /**
@@ -113,7 +104,7 @@ const App = () => {
             (direction === -1 && currSnapshotIndex - 1 >= 0)
 
         if (notAtTheBorders) {
-            setCurrSnapshotIndex((prevValue) => prevValue + direction)
+            setCurrSnapshotIndex(prevValue => prevValue + direction)
         }
     }
 
@@ -140,10 +131,7 @@ const App = () => {
                                 moveSnapshotIndex(-1)
                             }}
                         >
-                            <ArrowCircleLeftIcon
-                                fontSize="large"
-                                color="secondary"
-                            />
+                            <ArrowCircleLeftIcon fontSize="large" color="secondary" />
                         </IconButton>
                     )}
                     <IconButton size="medium" onClick={playButtonClicked}>
@@ -160,10 +148,7 @@ const App = () => {
                                 moveSnapshotIndex(1)
                             }}
                         >
-                            <ArrowCircleRightIcon
-                                fontSize="large"
-                                color="secondary"
-                            />
+                            <ArrowCircleRightIcon fontSize="large" color="secondary" />
                         </IconButton>
                     )}
                 </div>
