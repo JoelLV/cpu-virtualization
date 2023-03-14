@@ -104,7 +104,7 @@ const Graph = (props: Props) => {
                             ticks: {
                                 stepSize: 1,
                             },
-                            suggestedMax: 10,
+                            suggestedMax: 30,
                         },
                         y: {
                             title: {

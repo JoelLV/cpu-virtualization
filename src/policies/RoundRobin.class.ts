@@ -111,6 +111,7 @@ class RoundRobin implements Scheduler {
         let status: ProcessState = ProcessState.NOT_ARRIVED
         let startTime: number = 0
         let currentTime: number = 0
+
         if (!this.processHasArrived(timeslot, processIndex)) {
             return {
                 status,
@@ -191,7 +192,7 @@ class RoundRobin implements Scheduler {
         let currTimeslot: number = 1
         let currSnapshot: Snapshot
         let currRunningProcessIndex: number = this.getNewActiveIndexAfterContextSwitch(
-            0,
+            currTimeslot,
             0,
             timeslotOfCompletion
         )
