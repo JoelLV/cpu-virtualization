@@ -140,7 +140,12 @@ class RoundRobin implements Scheduler {
                     blockedProcessesCounter[processIndex] =
                         this.processes[processIndex].ioInterval
                     blockedTimeslots[processIndex] = 0
-                    status = ProcessState.READY
+                    if (processIndex === activeProcessIndex) {
+                        status = ProcessState.RUNNING
+                        --timeslotsBeforeCompletion[processIndex]
+                    } else {
+                        status = ProcessState.READY
+                    }
                 } else {
                     ++blockedTimeslots[processIndex]
                     --timeslotsBeforeCompletion[processIndex]
