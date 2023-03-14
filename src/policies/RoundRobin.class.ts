@@ -1,10 +1,13 @@
-import ProcessForm from '../types/Process'
+import Process from '../types/Process'
 import ProcessState from '../types/ProcessState.enum'
 import Scheduler from '../types/Scheduler.interface'
 import Snapshot from '../types/Snapshot.interface'
 
 class RoundRobin implements Scheduler {
-    constructor(private processes: ProcessForm[]) { }
+    constructor(
+        private processes: Process[],
+        private contextSwitchInterval: number
+    ) {}
 
     /**
      * Simulates the Round-Robin scheduling
@@ -32,8 +35,8 @@ class RoundRobin implements Scheduler {
                     {
                         status: ProcessState.NOT_ARRIVED,
                         startTime: 0,
-                        currentTime: 0
-                    }
+                        currentTime: 0,
+                    },
                 ],
             },
             {
@@ -51,8 +54,8 @@ class RoundRobin implements Scheduler {
                     {
                         status: ProcessState.NOT_ARRIVED,
                         startTime: 0,
-                        currentTime: 0
-                    }
+                        currentTime: 0,
+                    },
                 ],
             },
             {
@@ -70,8 +73,8 @@ class RoundRobin implements Scheduler {
                     {
                         status: ProcessState.READY,
                         startTime: 2,
-                        currentTime: 3
-                    }
+                        currentTime: 3,
+                    },
                 ],
             },
         ]

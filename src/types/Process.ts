@@ -10,10 +10,11 @@
  * the number of timeslots it will take
  * for each IO instruction to complete.
  */
-interface ProcessForm {
+interface Process {
     length: number
     ioInterval: number
     ioLength: number
+    arrivalTime: number
 }
 
-export default ProcessForm
+export default Process

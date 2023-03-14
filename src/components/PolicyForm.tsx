@@ -13,6 +13,8 @@ interface Props {
     processes: Process[]
     processesSetter: Function
     showingSnapshots: boolean
+    contextSwitchInterval: number
+    contextSwitchIntervalSetter: Function
 }
 const PolicyForm = (props: Props) => {
     const {
@@ -21,6 +23,8 @@ const PolicyForm = (props: Props) => {
         processes,
         processesSetter,
         showingSnapshots,
+        contextSwitchInterval,
+        contextSwitchIntervalSetter,
     } = props
 
     /**
@@ -42,6 +46,7 @@ const PolicyForm = (props: Props) => {
             length: 1,
             ioLength: 0,
             ioInterval: 0,
+            arrivalTime: 0,
         }
         processes.push(newProcess)
         processesSetter(structuredClone(processes))
@@ -72,11 +77,15 @@ const PolicyForm = (props: Props) => {
                     required
                     label="CS Interval"
                     type="number"
+                    value={contextSwitchInterval}
                     sx={{
                         maxWidth: '9.5em',
                         minWidth: '9.5em',
                     }}
                     disabled={showingSnapshots}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        contextSwitchIntervalSetter(+e.target.value)
+                    }}
                 />
             )}
             <div className="process-form-container">

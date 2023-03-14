@@ -11,18 +11,18 @@ interface Props {
 const Graph = (props: Props) => {
     const { snapshot } = props
     const processStateColors: Record<ProcessState, string> = {
-        'Ready': 'lightgreen',
-        'Running': 'yellow',
-        'Complete': 'darkgreen',
+        Ready: 'lightgreen',
+        Running: 'yellow',
+        Complete: 'darkgreen',
         'Not Arrived': 'white',
-        'Blocked': 'red',
+        Blocked: 'red',
     }
 
     /**
      * Parses the data stored in the snapshot
      * object to a data structure that the
      * graph component can understand.
-     * 
+     *
      * @returns a tuple that stores the data and the colors that will be used for the graph.
      */
     const parseSnapshotData = (): [number[][], string[]] => {
@@ -48,19 +48,29 @@ const Graph = (props: Props) => {
      * to the requirement of using multiple
      * datasets, which does not represent
      * the semantics of this graph.
-     * 
+     *
      * @returns an array of React components that represent the legend of the graph.
      */
     const getLegendComponents = (): ReactJSXElement[] => {
+        let index: number = 0
         const components: ReactJSXElement[] = []
         for (let key in processStateColors) {
             if (key !== 'Not Arrived') {
-                components.push((
-                    <div className="center-container" style={{fontSize: "0.7em"}}>
+                components.push(
+                    <div
+                        className="center-container"
+                        style={{ fontSize: '0.7em' }}
+                    >
                         {`${key}: `}
-                        <SquareIcon sx={{color: processStateColors[key as ProcessState]}} />
+                        <SquareIcon
+                            key={index}
+                            sx={{
+                                color: processStateColors[key as ProcessState],
+                            }}
+                        />
                     </div>
-                ))
+                )
+                index++
             }
         }
         return components
@@ -85,46 +95,48 @@ const Graph = (props: Props) => {
                             text: 'Process Scheduling Visualization',
                         },
                         legend: {
-                            display: false
-                        }
+                            display: false,
+                        },
                     },
                     scales: {
                         x: {
                             title: {
                                 display: true,
-                                text: 'Timeslots'
+                                text: 'Timeslots',
                             },
                             ticks: {
-                                stepSize: 1
+                                stepSize: 1,
                             },
-                            suggestedMax: 10
+                            suggestedMax: 10,
                         },
                         y: {
                             title: {
                                 display: true,
-                                text: 'Workload'
-                            }
-                        }
-                    }
-
+                                text: 'Workload',
+                            },
+                        },
+                    },
                 }}
                 data={{
-                    labels: snapshot !== undefined ? snapshot.processes.map((_, index: number): string => {
-                        return `Process ${index + 1}`
-                    }) : [],
-                    datasets: [{
-                        data: parsedData[0],
-                        backgroundColor: parsedData[1],
-                    }],
+                    labels:
+                        snapshot !== undefined
+                            ? snapshot.processes.map(
+                                  (_, index: number): string => {
+                                      return `Process ${index + 1}`
+                                  }
+                              )
+                            : [],
+                    datasets: [
+                        {
+                            data: parsedData[0],
+                            backgroundColor: parsedData[1],
+                        },
+                    ],
                 }}
             />
-            {
-                snapshot !== undefined && (
-                    <div className="legend">
-                        {getLegendComponents()}
-                    </div>
-                )
-            }
+            {snapshot !== undefined && (
+                <div className="legend">{getLegendComponents()}</div>
+            )}
         </>
     )
 }

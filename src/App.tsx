@@ -17,10 +17,7 @@ import Graph from './components/Graph'
 import PolicyForm from './components/PolicyForm'
 import PolicyType from './types/PolicyTypes.enum'
 import Snapshot from './types/Snapshot.interface'
-import {
-    IconButton,
-    Slider,
-} from '@mui/material'
+import { IconButton, Slider } from '@mui/material'
 import Process from './types/Process'
 import Scheduler from './types/Scheduler.interface'
 import Fifo from './policies/Fifo.class'
@@ -34,6 +31,8 @@ const App = () => {
     const [processes, setProcesses] = useState<Process[]>([])
     const [currSnapshotIndex, setCurrSnapshotIndex] = useState<number>(0)
     const [snapshots, setSnapshots] = useState<Snapshot[]>([])
+    const [contextSwitchInterval, setContextSwitchInterval] =
+        useState<number>(1)
 
     /**
      * Returns an array of snapshot
@@ -43,7 +42,7 @@ const App = () => {
      * the selected scheduler,
      * which is determined by
      * the state variable 'policyType'.
-     * 
+     *
      * @returns The resulting snapshot
      * array which represents the state
      * of each process at every timeslot
@@ -56,7 +55,7 @@ const App = () => {
                 scheduler = new Fifo(processes)
                 break
             case PolicyType.ROUND_ROBIN:
-                scheduler = new RoundRobin(processes)
+                scheduler = new RoundRobin(processes, contextSwitchInterval)
                 break
         }
         return scheduler.getSnapshots()
@@ -110,8 +109,8 @@ const App = () => {
      */
     const moveSnapshotIndex = (direction: -1 | 1) => {
         const notAtTheBorders: boolean =
-            (direction === 1 && (currSnapshotIndex + 1) < snapshots.length) ||
-            (direction === -1 && (currSnapshotIndex - 1) >= 0)
+            (direction === 1 && currSnapshotIndex + 1 < snapshots.length) ||
+            (direction === -1 && currSnapshotIndex - 1 >= 0)
 
         if (notAtTheBorders) {
             setCurrSnapshotIndex((prevValue) => prevValue + direction)
@@ -121,9 +120,7 @@ const App = () => {
     return (
         <div className="home-page-container">
             <div className="graph-container">
-                <Graph
-                    snapshot={snapshots[currSnapshotIndex]}
-                />
+                <Graph snapshot={snapshots[currSnapshotIndex]} />
                 {showingSnapshots && (
                     <Slider
                         aria-label="Snapshot slider"
@@ -137,7 +134,12 @@ const App = () => {
                 )}
                 <div className="center-container">
                     {showingSnapshots && (
-                        <IconButton size="medium" onClick={() => { moveSnapshotIndex(-1) }}>
+                        <IconButton
+                            size="medium"
+                            onClick={() => {
+                                moveSnapshotIndex(-1)
+                            }}
+                        >
                             <ArrowCircleLeftIcon
                                 fontSize="large"
                                 color="secondary"
@@ -152,7 +154,12 @@ const App = () => {
                         )}
                     </IconButton>
                     {showingSnapshots && (
-                        <IconButton size="medium" onClick={() => { moveSnapshotIndex(1) }}>
+                        <IconButton
+                            size="medium"
+                            onClick={() => {
+                                moveSnapshotIndex(1)
+                            }}
+                        >
                             <ArrowCircleRightIcon
                                 fontSize="large"
                                 color="secondary"
@@ -167,6 +174,8 @@ const App = () => {
                 processes={processes}
                 processesSetter={setProcesses}
                 showingSnapshots={showingSnapshots}
+                contextSwitchInterval={contextSwitchInterval}
+                contextSwitchIntervalSetter={setContextSwitchInterval}
             />
         </div>
     )

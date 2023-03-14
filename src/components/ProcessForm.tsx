@@ -31,7 +31,7 @@ const ProcessForm = (props: Props) => {
      */
     const processInfoChanged = (
         newValue: number,
-        attribute: 'length' | 'ioLength' | 'ioInterval'
+        attribute: 'length' | 'ioLength' | 'ioInterval' | 'arrivalTime'
     ) => {
         processes[index][attribute] = newValue
         processesSetter(structuredClone(processes))
@@ -78,6 +78,21 @@ const ProcessForm = (props: Props) => {
                 value={processes[index].ioInterval}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     processInfoChanged(+e.target.value, 'ioInterval')
+                }}
+                sx={{
+                    maxWidth: '7.5em',
+                    minWidth: '7.5em',
+                }}
+                disabled={showingSnapshots}
+            />
+            <TextField
+                required
+                type="number"
+                label="Arrival Time"
+                variant="standard"
+                value={processes[index].arrivalTime}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    processInfoChanged(+e.target.value, 'arrivalTime')
                 }}
                 sx={{
                     maxWidth: '7.5em',
