@@ -1,9 +1,9 @@
-import PolicyType from "../types/PolicyTypes.enum"
-import Process from "../types/Process"
+import PolicyType from '../types/PolicyTypes.enum'
+import Process from '../types/Process'
 
 /**
  * Validates a given number.
- * 
+ *
  * @param num number to validate.
  * @returns whether the number given is valid.
  */
@@ -16,7 +16,7 @@ const isValidNumber = (num: number): boolean => {
  * object. Returns a tuple with a boolean,
  * which represents if the data is valid or not,
  * and a string which contains the error messages.
- * 
+ *
  * @param process process object to validate.
  * @returns a tuple which contains the result after validation.
  */
@@ -44,20 +44,24 @@ const validateProcessInfo = (process: Process): [boolean, string] => {
             errorMessage += 'I/O length must be greater than 0.\n'
         }
     }
-    
+
     return [validData, errorMessage]
 }
 
 /**
  * Validates the data given in the PolicyForm
  * component. Returns a tuple with its result.
- * 
+ *
  * @param processes an array of process objects to validate.
  * @param contextSwitchInterval the context switch interval number to validate.
  * @param policy the currently selected scheduling policy.
  * @returns a tuple with its first element being whether validation succeeded, and a string storing the error message if validation failed.
  */
-const validatePolicyForm = (processes: Process[], contextSwitchInterval: number, policy: PolicyType): [boolean, string] => {
+const validatePolicyForm = (
+    processes: Process[],
+    contextSwitchInterval: number,
+    policy: PolicyType
+): [boolean, string] => {
     let validData: boolean = true
     let errorMessage: string = ''
 

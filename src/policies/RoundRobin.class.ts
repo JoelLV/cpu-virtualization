@@ -141,6 +141,7 @@ class RoundRobin implements Scheduler {
                     ++blockedTimeslots[processIndex]
                     --timeslotsBeforeCompletion[processIndex]
                 }
+                --blockedProcessesCounter[processIndex]
             } else if (processIndex === activeProcessIndex) {
                 status = ProcessState.RUNNING
                 --timeslotsBeforeCompletion[processIndex]

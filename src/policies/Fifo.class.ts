@@ -5,7 +5,7 @@ import Scheduler from '../types/Scheduler.interface'
 import Snapshot from '../types/Snapshot.interface'
 
 class Fifo implements Scheduler {
-    constructor(private processes: Process[]) { }
+    constructor(private processes: Process[]) {}
 
     /**
      * Calculates the number of timeslots needed
@@ -36,13 +36,15 @@ class Fifo implements Scheduler {
      * @returns the index of the earliest possible process to run
      */
     getNextProcessIndexToRun(timeslotOfCompletion: number[]): number {
-        let earliestProcessIndexArrival = 0
+        let earliestProcessIndexArrival = -1
         this.processes.forEach((process: Process, index: number) => {
-            if (
-                process.arrivalTime <= this.processes[earliestProcessIndexArrival].arrivalTime &&
-                timeslotOfCompletion[index] === -1
-            ) {
-                earliestProcessIndexArrival = index
+            if (timeslotOfCompletion[index] === -1) {
+                if (
+                    earliestProcessIndexArrival === -1 ||
+                    process.arrivalTime <= this.processes[earliestProcessIndexArrival].arrivalTime
+                ) {
+                    earliestProcessIndexArrival = index
+                }
             }
         })
         return earliestProcessIndexArrival
@@ -114,9 +116,8 @@ class Fifo implements Scheduler {
                             status = ProcessState.BLOCKED
                             ++blockedProcessCounter[processIndex]
                         }
-                    } else {
-                        --timeslotsBeforeIoCall[processIndex]
                     }
+                    --timeslotsBeforeIoCall[processIndex]
                 }
                 --timeslotsBeforeCompletion[processIndex]
             } else {
@@ -170,6 +171,7 @@ class Fifo implements Scheduler {
             snapshot = {
                 processes: [],
             }
+            let currProcessCompleted: boolean = false
             this.processes.forEach((process: Process, index: number) => {
                 const processSnapshot: ProcessSnapshot = this.getProcessSnapshot(
                     timeslot,
@@ -182,10 +184,13 @@ class Fifo implements Scheduler {
                     blockedTimeslots
                 )
                 if (processSnapshot.status === ProcessState.COMPLETE) {
-                    runningProcessIndex = this.getNextProcessIndexToRun(timeslotOfCompletion)
+                    currProcessCompleted = true
                 }
                 snapshot.processes.push(processSnapshot)
             })
+            if (currProcessCompleted) {
+                runningProcessIndex = this.getNextProcessIndexToRun(timeslotOfCompletion)
+            }
             snapshots.push(snapshot)
             ++timeslot
         } while (!this.workloadIsCompleted(snapshot.processes))

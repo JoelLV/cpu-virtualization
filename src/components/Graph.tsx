@@ -57,7 +57,7 @@ const Graph = (props: Props) => {
         for (let key in processStateColors) {
             if (key !== 'Not Arrived') {
                 components.push(
-                    <div className="center-container" style={{ fontSize: '0.7em' }}>
+                    <div key={index} className="center-container" style={{ fontSize: '0.7em' }}>
                         {`${key}: `}
                         <SquareIcon
                             key={index}

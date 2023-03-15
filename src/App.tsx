@@ -69,7 +69,11 @@ const App = () => {
      */
     const playButtonClicked = () => {
         if (!showingSnapshots) {
-            const validationResult: [boolean, string] = validatePolicyForm(processes, contextSwitchInterval, policyType)
+            const validationResult: [boolean, string] = validatePolicyForm(
+                processes,
+                contextSwitchInterval,
+                policyType
+            )
             if (validationResult[0]) {
                 setSnapshots(getSnapshotsFromPolicy())
                 setShowingSnapshots(prevValue => !prevValue)
@@ -122,11 +126,7 @@ const App = () => {
 
     return (
         <>
-            {
-                !validationSucceeded && (
-                    <Alert severity="error">{validationErrorMessage}</Alert>
-                )
-            }
+            {!validationSucceeded && <Alert severity="error">{validationErrorMessage}</Alert>}
             <div className="home-page-container">
                 <div className="graph-container">
                     <Graph snapshot={snapshots[currSnapshotIndex]} />
