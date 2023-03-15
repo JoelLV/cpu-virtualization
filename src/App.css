@@ -40,3 +40,13 @@
     justify-content: center;
     align-items: center;
 }
+
+@media screen and (max-width: 1250px) {
+    .home-page-container {
+        flex-direction: column;
+    }
+    .graph-container {
+        width: 100%;
+        margin-bottom: 8%;
+    }
+}
