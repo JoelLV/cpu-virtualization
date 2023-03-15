@@ -14,6 +14,8 @@ import Process from './types/Process'
 import Scheduler from './types/Scheduler.interface'
 import Fifo from './policies/Fifo.class'
 import RoundRobin from './policies/RoundRobin.class'
+import validatePolicyForm from './helpers/validatePolicyForm.helpers'
+import Alert from '@mui/material/Alert/Alert'
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
@@ -24,6 +26,8 @@ const App = () => {
     const [currSnapshotIndex, setCurrSnapshotIndex] = useState<number>(0)
     const [snapshots, setSnapshots] = useState<Snapshot[]>([])
     const [contextSwitchInterval, setContextSwitchInterval] = useState<number>(1)
+    const [validationSucceeded, setValidationSucceeded] = useState<boolean>(true)
+    const [validationErrorMessage, setValidationErrorMessage] = useState<string>('')
 
     /**
      * Returns an array of snapshot
@@ -65,13 +69,21 @@ const App = () => {
      */
     const playButtonClicked = () => {
         if (!showingSnapshots) {
-            setSnapshots(getSnapshotsFromPolicy())
+            const validationResult: [boolean, string] = validatePolicyForm(processes, contextSwitchInterval, policyType)
+            if (validationResult[0]) {
+                setSnapshots(getSnapshotsFromPolicy())
+                setShowingSnapshots(prevValue => !prevValue)
+                setValidationSucceeded(true)
+            } else {
+                console.log(validationResult[1])
+                setValidationErrorMessage(validationResult[1])
+                setValidationSucceeded(false)
+            }
         } else {
             setSnapshots([])
             setCurrSnapshotIndex(0)
+            setShowingSnapshots(prevValue => !prevValue)
         }
-
-        setShowingSnapshots(prevValue => !prevValue)
     }
 
     /**
@@ -109,60 +121,67 @@ const App = () => {
     }
 
     return (
-        <div className="home-page-container">
-            <div className="graph-container">
-                <Graph snapshot={snapshots[currSnapshotIndex]} />
-                {showingSnapshots && (
-                    <Slider
-                        aria-label="Snapshot slider"
-                        valueLabelDisplay="auto"
-                        marks
-                        min={1}
-                        max={snapshots.length}
-                        onChange={sliderValueChanged}
-                        value={currSnapshotIndex + 1}
-                    />
-                )}
-                <div className="center-container">
+        <>
+            {
+                !validationSucceeded && (
+                    <Alert severity="error">{validationErrorMessage}</Alert>
+                )
+            }
+            <div className="home-page-container">
+                <div className="graph-container">
+                    <Graph snapshot={snapshots[currSnapshotIndex]} />
                     {showingSnapshots && (
-                        <IconButton
-                            size="medium"
-                            onClick={() => {
-                                moveSnapshotIndex(-1)
-                            }}
-                        >
-                            <ArrowCircleLeftIcon fontSize="large" color="secondary" />
-                        </IconButton>
+                        <Slider
+                            aria-label="Snapshot slider"
+                            valueLabelDisplay="auto"
+                            marks
+                            min={1}
+                            max={snapshots.length}
+                            onChange={sliderValueChanged}
+                            value={currSnapshotIndex + 1}
+                        />
                     )}
-                    <IconButton size="medium" onClick={playButtonClicked}>
-                        {showingSnapshots ? (
-                            <CancelIcon fontSize="large" color="error" />
-                        ) : (
-                            <PlayCircleIcon fontSize="large" color="success" />
+                    <div className="center-container">
+                        {showingSnapshots && (
+                            <IconButton
+                                size="medium"
+                                onClick={() => {
+                                    moveSnapshotIndex(-1)
+                                }}
+                            >
+                                <ArrowCircleLeftIcon fontSize="large" color="secondary" />
+                            </IconButton>
                         )}
-                    </IconButton>
-                    {showingSnapshots && (
-                        <IconButton
-                            size="medium"
-                            onClick={() => {
-                                moveSnapshotIndex(1)
-                            }}
-                        >
-                            <ArrowCircleRightIcon fontSize="large" color="secondary" />
+                        <IconButton size="medium" onClick={playButtonClicked}>
+                            {showingSnapshots ? (
+                                <CancelIcon fontSize="large" color="error" />
+                            ) : (
+                                <PlayCircleIcon fontSize="large" color="success" />
+                            )}
                         </IconButton>
-                    )}
+                        {showingSnapshots && (
+                            <IconButton
+                                size="medium"
+                                onClick={() => {
+                                    moveSnapshotIndex(1)
+                                }}
+                            >
+                                <ArrowCircleRightIcon fontSize="large" color="secondary" />
+                            </IconButton>
+                        )}
+                    </div>
                 </div>
+                <PolicyForm
+                    policyTypeSetter={setPolicyType}
+                    policyType={policyType}
+                    processes={processes}
+                    processesSetter={setProcesses}
+                    showingSnapshots={showingSnapshots}
+                    contextSwitchInterval={contextSwitchInterval}
+                    contextSwitchIntervalSetter={setContextSwitchInterval}
+                />
             </div>
-            <PolicyForm
-                policyTypeSetter={setPolicyType}
-                policyType={policyType}
-                processes={processes}
-                processesSetter={setProcesses}
-                showingSnapshots={showingSnapshots}
-                contextSwitchInterval={contextSwitchInterval}
-                contextSwitchIntervalSetter={setContextSwitchInterval}
-            />
-        </div>
+        </>
     )
 }
 
