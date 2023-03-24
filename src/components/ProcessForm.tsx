@@ -43,6 +43,21 @@ const ProcessForm = (props: Props) => {
             <TextField
                 required
                 type="number"
+                label="Arrival Time"
+                variant="standard"
+                value={processes[index].arrivalTime}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    processInfoChanged(+e.target.value, 'arrivalTime')
+                }}
+                sx={{
+                    maxWidth: '7.5em',
+                    minWidth: '7.5em',
+                }}
+                disabled={showingSnapshots}
+            />
+            <TextField
+                required
+                type="number"
                 label="Process length"
                 variant="standard"
                 value={processes[index].length}
@@ -52,21 +67,6 @@ const ProcessForm = (props: Props) => {
                 sx={{
                     maxWidth: '6.5em',
                     minWidth: '6.5em',
-                }}
-                disabled={showingSnapshots}
-            />
-            <TextField
-                required
-                type="number"
-                label="I/O request length"
-                variant="standard"
-                value={processes[index].ioLength}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    processInfoChanged(+e.target.value, 'ioLength')
-                }}
-                sx={{
-                    maxWidth: '7.5em',
-                    minWidth: '7.5em',
                 }}
                 disabled={showingSnapshots}
             />
@@ -88,11 +88,11 @@ const ProcessForm = (props: Props) => {
             <TextField
                 required
                 type="number"
-                label="Arrival Time"
+                label="I/O request length"
                 variant="standard"
-                value={processes[index].arrivalTime}
+                value={processes[index].ioLength}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    processInfoChanged(+e.target.value, 'arrivalTime')
+                    processInfoChanged(+e.target.value, 'ioLength')
                 }}
                 sx={{
                     maxWidth: '7.5em',
@@ -100,6 +100,7 @@ const ProcessForm = (props: Props) => {
                 }}
                 disabled={showingSnapshots}
             />
+            
             <IconButton
                 color="error"
                 size="small"

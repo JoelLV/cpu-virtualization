@@ -71,7 +71,7 @@ const PolicyForm = (props: Props) => {
             {policyType === PolicyType.ROUND_ROBIN && (
                 <TextField
                     required
-                    label="CS Interval"
+                    label="Timeslice Length"
                     type="number"
                     value={contextSwitchInterval}
                     sx={{
