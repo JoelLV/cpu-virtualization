@@ -4,12 +4,15 @@ import SquareIcon from '@mui/icons-material/Square'
 import ProcessState from '../types/ProcessState.enum'
 import Snapshot from '../types/Snapshot.interface'
 import { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
+import { TooltipItem } from 'chart.js'
 
 interface Props {
     snapshot: Snapshot
+    turnaroundTimes: number[]
+    responseTimes: number[]
 }
 const Graph = (props: Props) => {
-    const { snapshot } = props
+    const { snapshot, turnaroundTimes, responseTimes } = props
     const processStateColors: Record<ProcessState, string> = {
         Ready: 'lightgreen',
         Running: 'yellow',
@@ -93,6 +96,17 @@ const Graph = (props: Props) => {
                         },
                         legend: {
                             display: false,
+                        },
+                        tooltip: {
+                            callbacks: {
+                                footer: (tooltipItems: TooltipItem<'bar'>[]) => {
+                                    const processIndex: number = tooltipItems[0].dataIndex
+                                    return (
+                                        `Turnaround Time: ${turnaroundTimes[processIndex]}\n` +
+                                        `Response Time: ${responseTimes[processIndex]}`
+                                    )
+                                },
+                            },
                         },
                     },
                     scales: {

@@ -71,7 +71,6 @@ const ProcessForm = (props: Props) => {
                 disabled={showingSnapshots}
             />
             <TextField
-                required
                 type="number"
                 label="I/O request interval"
                 variant="standard"
@@ -86,7 +85,6 @@ const ProcessForm = (props: Props) => {
                 disabled={showingSnapshots}
             />
             <TextField
-                required
                 type="number"
                 label="I/O request length"
                 variant="standard"
@@ -100,7 +98,6 @@ const ProcessForm = (props: Props) => {
                 }}
                 disabled={showingSnapshots}
             />
-            
             <IconButton
                 color="error"
                 size="small"

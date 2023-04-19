@@ -14,8 +14,14 @@ import Process from './types/Process'
 import Scheduler from './types/Scheduler.interface'
 import Fifo from './policies/Fifo.class'
 import RoundRobin from './policies/RoundRobin.class'
-import validatePolicyForm from './helpers/validatePolicyForm.helpers'
+import validatePolicyForm from './helpers/validate-policy-form'
 import Alert from '@mui/material/Alert/Alert'
+import {
+    calcAverageProcessTurnaroundTimes,
+    calcAvgProcessResponseTimes,
+    calcProcessResponseTimes,
+    calcProcessTurnaroundTimes,
+} from './helpers/scheduler-calc'
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
@@ -28,6 +34,10 @@ const App = () => {
     const [contextSwitchInterval, setContextSwitchInterval] = useState<number>(1)
     const [validationSucceeded, setValidationSucceeded] = useState<boolean>(true)
     const [validationErrorMessage, setValidationErrorMessage] = useState<string>('')
+    const [avgTurnaroundTime, setAvgTurnaroundTime] = useState<number>(0)
+    const [avgResponseTime, setAvgResponseTime] = useState<number>(0)
+    const [turnaroundTimes, setTurnaroundTimes] = useState<number[]>([])
+    const [responseTimes, setResponseTimes] = useState<number[]>([])
 
     /**
      * Returns an array of snapshot
@@ -75,11 +85,15 @@ const App = () => {
                 policyType
             )
             if (validationResult[0]) {
-                setSnapshots(getSnapshotsFromPolicy())
+                const snpList: Snapshot[] = getSnapshotsFromPolicy()
+                setSnapshots(snpList)
                 setShowingSnapshots(prevValue => !prevValue)
                 setValidationSucceeded(true)
+                setAvgTurnaroundTime(calcAverageProcessTurnaroundTimes(snpList))
+                setAvgResponseTime(calcAvgProcessResponseTimes(snpList))
+                setTurnaroundTimes(calcProcessTurnaroundTimes(snpList))
+                setResponseTimes(calcProcessResponseTimes(snpList))
             } else {
-                console.log(validationResult[1])
                 setValidationErrorMessage(validationResult[1])
                 setValidationSucceeded(false)
             }
@@ -129,7 +143,11 @@ const App = () => {
             {!validationSucceeded && <Alert severity="error">{validationErrorMessage}</Alert>}
             <div className="home-page-container">
                 <div className="graph-container">
-                    <Graph snapshot={snapshots[currSnapshotIndex]} />
+                    <Graph
+                        snapshot={snapshots[currSnapshotIndex]}
+                        turnaroundTimes={turnaroundTimes}
+                        responseTimes={responseTimes}
+                    />
                     {showingSnapshots && (
                         <Slider
                             aria-label="Snapshot slider"
@@ -170,6 +188,8 @@ const App = () => {
                             </IconButton>
                         )}
                     </div>
+                    {showingSnapshots && <p>Average Turnaround Time: {avgTurnaroundTime}</p>}
+                    {showingSnapshots && <p>Average Response Time: {avgResponseTime}</p>}
                 </div>
                 <PolicyForm
                     policyTypeSetter={setPolicyType}
