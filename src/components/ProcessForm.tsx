@@ -7,9 +7,10 @@ interface Props {
     processes: Process[]
     processesSetter: Function
     showingSnapshots: boolean
+    showLabels: boolean
 }
 const ProcessForm = (props: Props) => {
-    const { index, processes, processesSetter, showingSnapshots } = props
+    const { index, processes, processesSetter, showingSnapshots, showLabels } = props
 
     /**
      * Removes a process from the 'processes'
@@ -41,9 +42,9 @@ const ProcessForm = (props: Props) => {
         <div className="process-form-row">
             {`Process ${index + 1}`}
             <TextField
-                required
+                required={showLabels}
                 type="number"
-                label="Arrival Time"
+                label={showLabels && "Arrival Time"}
                 variant="standard"
                 value={processes[index].arrivalTime}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,9 +57,9 @@ const ProcessForm = (props: Props) => {
                 disabled={showingSnapshots}
             />
             <TextField
-                required
+                required={showLabels}
                 type="number"
-                label="Process length"
+                label={showLabels && "Process length"}
                 variant="standard"
                 value={processes[index].length}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,7 +73,7 @@ const ProcessForm = (props: Props) => {
             />
             <TextField
                 type="number"
-                label="I/O request interval"
+                label={showLabels && "I/O request interval"}
                 variant="standard"
                 value={processes[index].ioInterval}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,7 +87,7 @@ const ProcessForm = (props: Props) => {
             />
             <TextField
                 type="number"
-                label="I/O request length"
+                label={showLabels && "I/O request length"}
                 variant="standard"
                 value={processes[index].ioLength}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {

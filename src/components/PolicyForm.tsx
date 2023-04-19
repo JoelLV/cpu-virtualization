@@ -111,6 +111,7 @@ const PolicyForm = (props: Props) => {
                                     processes={processes}
                                     processesSetter={processesSetter}
                                     showingSnapshots={showingSnapshots}
+                                    showLabels={index === 0}
                                 />
                             )
                         })}
