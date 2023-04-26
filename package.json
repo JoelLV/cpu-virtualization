@@ -3,7 +3,7 @@
     "private": true,
     "version": "0.0.0",
     "type": "module",
-    "homepage": "https://gitname.github.io/react-gh-pages",
+    "homepage": "https://joellv.github.io/cpu-virtualization",
     "scripts": {
         "predeploy": "yarn build",
         "deploy": "gh-pages -d dist",
