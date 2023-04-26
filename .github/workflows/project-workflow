@@ -6,9 +6,9 @@ name: Workflow for Deploying React Project to Github Pages
 on:
   # Triggers the workflow on push or pull request events but only for the "develop" branch
   push:
-    branches: [ "gh-pages" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "gh-pages" ]
+    branches: [ "master" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
