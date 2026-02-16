@@ -41,7 +41,7 @@ class Fifo implements Scheduler {
             if (timeslotOfCompletion[index] === -1) {
                 if (
                     earliestProcessIndexArrival === -1 ||
-                    process.arrivalTime <= this.processes[earliestProcessIndexArrival].arrivalTime
+                    process.arrivalTime < this.processes[earliestProcessIndexArrival].arrivalTime
                 ) {
                     earliestProcessIndexArrival = index
                 }

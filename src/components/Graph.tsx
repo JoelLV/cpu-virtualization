@@ -132,7 +132,7 @@ const Graph = (props: Props) => {
                     labels:
                         snapshot !== undefined
                             ? snapshot.processes.map((_, index: number): string => {
-                                  return `Process ${index + 1}`
+                                  return `Process ${String.fromCharCode(index + 65)}`
                               })
                             : [],
                     datasets: [

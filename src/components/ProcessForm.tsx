@@ -40,7 +40,7 @@ const ProcessForm = (props: Props) => {
 
     return (
         <div className="process-form-row">
-            {`Process ${index + 1}`}
+            {`Process ${String.fromCharCode(index + 65)}`}
             <TextField
                 required={showLabels}
                 type="number"

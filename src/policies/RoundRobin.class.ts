@@ -193,7 +193,7 @@ class RoundRobin implements Scheduler {
         let currTimeslot: number = 1
         let currSnapshot: Snapshot
         let currRunningProcessIndex: number = this.getNewActiveIndexAfterContextSwitch(
-            0,
+            -1,
             0,
             timeslotOfCompletion
         )
